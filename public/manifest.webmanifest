@@ -1,0 +1,9 @@
+{
+  "name": "KaamWala",
+  "short_name": "KaamWala",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef2f5",
+  "theme_color": "#10283d",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
