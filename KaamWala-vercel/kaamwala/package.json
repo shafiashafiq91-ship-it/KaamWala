@@ -1,0 +1,12 @@
+{
+  "name": "kaamwala",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KaamWala: trusted home services marketplace for Pakistan, with JazzCash / EasyPaisa escrow",
+  "main": "src/server.js",
+  "engines": { "node": ">=22.5" },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env --disable-warning=ExperimentalWarning src/server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test --test-force-exit --test-timeout=20000 test/*.test.js"
+  }
+}

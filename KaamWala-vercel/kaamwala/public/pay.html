@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wallet checkout</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body { background: #f3f4f6; }
+    .wrap { max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fff; }
+    .bar { padding: 22px 20px; color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+    .jazzcash .bar { background: #c8102e; }
+    .easypaisa .bar { background: #3bb54a; }
+    .sim { background: #fff3df; color: #7a4a00; font-size: 12px; padding: 10px 20px; line-height: 1.5; }
+    .box { padding: 20px; }
+    .amt { font-size: 30px; font-weight: 900; margin: 4px 0 18px; }
+    .muted { color: #6b7a89; font-size: 13px; }
+    .jazzcash .btn.go { background: #c8102e; }
+    .easypaisa .btn.go { background: #3bb54a; }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="w">
+    <div class="bar"><span id="brand"></span></div>
+    <div class="sim"><b>Sandbox simulator.</b> No real money moves. Add your merchant sandbox credentials in <code>.env</code> and this step opens the real JazzCash / EasyPaisa checkout instead.</div>
+    <div class="box">
+      <div class="muted">Pay to KaamWala · <span id="what"></span></div>
+      <div class="amt" id="amt"></div>
+      <form id="f">
+        <div class="field" style="margin:0 0 12px"><label>Mobile account number</label><input name="msisdn" inputmode="tel" value="03123456789" required></div>
+        <div class="field" style="margin:0 0 16px"><label>MPIN</label><input name="mpin" type="password" inputmode="numeric" value="1234" required></div>
+        <input type="hidden" name="result" value="pay">
+        <button class="btn go">Pay now</button>
+      </form>
+      <form id="c" style="margin-top:10px"><input type="hidden" name="result" value="cancel"><button class="btn ghost">Cancel payment</button></form>
+    </div>
+  </div>
+  <script>
+    (async () => {
+      const ref = location.hash.slice(1);
+      const r = await fetch('/api/pay/' + encodeURIComponent(ref)).then((x) => x.json());
+      const p = r.payment;
+      if (!p || p.status !== 'initiated') { document.querySelector('.box').innerHTML = '<p>This payment link has already been used.</p><a href="/">Back to KaamWala</a>'; return; }
+      document.getElementById('w').classList.add(p.provider);
+      document.getElementById('brand').textContent = p.provider === 'jazzcash' ? 'JazzCash' : 'easypaisa';
+      document.getElementById('what').textContent = 'Booking ' + p.code + (p.extra ? ' · add-on service' : ' · visit fee');
+      document.getElementById('amt').textContent = 'Rs ' + Number(p.amount).toLocaleString('en-PK');
+      for (const id of ['f', 'c']) {
+        const form = document.getElementById(id);
+        form.method = 'post';
+        form.action = '/pay/simulate/' + encodeURIComponent(ref);
+      }
+    })();
+  </script>
+</body>
+</html>
